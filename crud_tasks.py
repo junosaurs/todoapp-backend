@@ -1,27 +1,36 @@
 # for test purposes only!
-from schemas import Task
+from schemas import Task, TaskCreate
+from models import TaskObj
 import datetime
-TEST_DATA = {
-    1: Task(id=1, title="qwe123", description="asd", start_date=datetime.datetime.now(),  active=True),
-    3: Task(id=3, title="456", description="x", start_date=datetime.datetime.now(), active=True),
-    2: Task(id=2, title="789", description="y", start_date=datetime.datetime.now(), active=True),
-    4: Task(id=4, title="QQQ", description="qdsfg;lkjhgfdwsdf", start_date=datetime.datetime.now(), active=True),
-    5: Task(id=5, title="WWW", description="q wertyiouytrerfgjnvb hjghjv fghnfn fg fdg sa", start_date=datetime.datetime.now(), active=True),
-}
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
-def get_all_tasks():
-    return list(TEST_DATA.values())
+def get_all_tasks(session: Session):
+    rows = session.query(TaskObj).all()
+    return rows
 
-def get_task(task_id: int):
-    task = TEST_DATA.get(task_id)
+def get_task(task_id: int, session: Session):
+    task = session.query(TaskObj).filter(TaskObj.id == task_id).scalar()
     return task
 
-def create_task(task):
-    return task
+def create_task(task: TaskCreate, session: Session):
+    new_task = TaskObj(title=task.title, description=task.description, end_date=task.end_date)
+    session.add(new_task)
+    session.flush()
+    session.commit()
+    return new_task
 
-def update_task(task):
-    task = TEST_DATA.get(task_id)
-    return task
+def update_task(task, task_id, session: Session):
+    task_for_update = session.query(TaskObj).filter(TaskObj.id == task_id).scalar()
+    for var, value in vars(task).items():
+        setattr(task_for_update, var, value) if value else None
+    session.add(task_for_update)
+    session.commit()
+    session.refresh(task_for_update)
+    return task_for_update
 
-def delete_task(task_id: int):
-    return True
+def delete_task(task_id: int, session: Session):
+    task = session.query(TaskObj).filter(TaskObj.id == task_id).first()
+    if task is not None:
+        session.delete(task)
+        session.commit()

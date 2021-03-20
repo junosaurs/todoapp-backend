@@ -2,6 +2,10 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, Response, status
 import crud_tasks
 import schemas
+import database
+
+
+database.Base.metadata.create_all(database.engine)
 
 app = FastAPI()
 
@@ -11,29 +15,34 @@ async def root():
 
 # CRUD для задач 
 
+# DONE
 @app.get('/task/', response_model = List[schemas.Task])
 async def get_all_tasks():
-    tasks = crud_tasks.get_all_tasks()
+    tasks = crud_tasks.get_all_tasks(database.session)
     return tasks
 
+#DONE
 @app.get('/task/{task_id}', response_model=schemas.Task)
-async def get_task(task_id: int, response: Response):
-    task = crud_tasks.get_task(task_id)
+async def get_task(task_id: int, response: Response, ):
+    task = crud_tasks.get_task(task_id, database.session)
     if task is None:
         response.status_code = status.HTTP_404_NOT_FOUND
-    return task
+    else:
+        return schemas.Task.from_orm(task)
 
-@app.post('/task/')
+#DONE
+@app.post('/task/', response_model=schemas.Task)
 async def create_task(task: schemas.TaskCreate, response: Response):
     response.status_code = status.HTTP_201_CREATED
-    return crud_tasks.create_task(task)
+    return crud_tasks.create_task(task, database.session)
 
-@app.post('/task/{task_id}')
-async def update_task(task: schemas.TaskUpdate):
-    return crud_tasks.update_task(task)
 
+@app.put('/task/{task_id}')
+async def update_task(task: schemas.TaskUpdate, task_id: int):
+    return crud_tasks.update_task(task, task_id, database.session)
+
+#DONE
 @app.delete('/task/{task_id}')
-async def delete_task(task_id: int):
-    success = crud_tasks.delete_task(task_id)
-    if success:
-        return Response(status_code=204)
+async def delete_task(task_id: int, response: Response):
+    crud_tasks.delete_task(task_id, database.session)
+    response.status_code = status.HTTP_204_NO_CONTENT

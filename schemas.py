@@ -6,6 +6,8 @@ class TaskBase(BaseModel):
     title: str
     description: str
     end_date: Optional[datetime.datetime]
+    class Config:
+        orm_mode = True
 
 class TaskCreate(TaskBase):
     pass
@@ -13,9 +15,9 @@ class TaskCreate(TaskBase):
 class TaskUpdate(TaskBase):
     title: Optional[str]
     description: Optional[str]
-    active: Optional[bool]
+    is_active: Optional[bool]
 
 class Task(TaskBase):
     id: int
     start_date: datetime.datetime
-    active: bool
+    is_active: bool
