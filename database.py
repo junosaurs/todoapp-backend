@@ -2,7 +2,7 @@ import os
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
@@ -26,4 +26,4 @@ else:
     )
 
 engine = create_engine(url,echo=True)
-session = Session(engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
