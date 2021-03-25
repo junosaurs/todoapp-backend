@@ -1,7 +1,6 @@
 from fastapi.testclient import TestClient
 from main import app, get_session
 from database.base_class import Base
-from pydantic import BaseSettings
 from schemas.tasks import TaskCreateSchema, TaskReadSchema, TaskUpdateSchema
 from models.tasks import Task
 from .utils import create_task_random_data, create_task_random_data_create, random_string
