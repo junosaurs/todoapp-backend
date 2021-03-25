@@ -1,28 +1,24 @@
 import os
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 
-Base = declarative_base()
+from config import settings
 
 # выбор конфига для подключения БД в зависимости от окружения
-config = os.environ.get("CONFIG")
-if config == "HEROKU":
+configuration = os.environ.get("CONFIG")
+if configuration == "HEROKU":
     # подключение к Heroku Postgres
     url = os.environ.get("DATABASE_URL")
 else:
     # подключение на тестовом сервере
-    DB_NAME = os.environ.get("DB_NAME")
-    DB_USERNAME = os.environ.get("DB_USERNAME")
-    DB_PASSWORD = os.environ.get("DB_PASSWORD")
-    url = URL(
+    url = URL.create(
         drivername="postgresql",
-        username=DB_USERNAME,
-        password=DB_PASSWORD,
+        username=settings.DB_USERNAME,
+        password=settings.DB_PASSWORD,
         host='localhost',
         port=5432,
-        database=DB_NAME
+        database=settings.DB_NAME
     )
 
 engine = create_engine(url,echo=True)
