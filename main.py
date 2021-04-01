@@ -1,6 +1,5 @@
 from typing import List
 from fastapi import FastAPI, Depends, HTTPException, Response, status
-from fastapi.middleware.cors import CORSMiddleware
 import crud
 import schemas
 from database.session import SessionLocal, engine
@@ -15,15 +14,6 @@ def get_session():
         session.close()
 
 app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"]
-    allow_headers=["*"]
-)
-
-
 Base.metadata.create_all(engine)
 
 # базовая точка входа
