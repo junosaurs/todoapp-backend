@@ -23,8 +23,6 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Base.metadata.create_all(engine)
-
 # базовая точка входа
 @app.get('/')
 async def root():
