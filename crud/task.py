@@ -25,7 +25,8 @@ def update_task(task: TaskUpdateSchema, task_id, session: Session):
         task_for_update = Task(title=task.title, description=task.description, end_date=task.end_date, start_date=task.start_date, is_active=task.is_active)
     else:
         for var, value in vars(task).items():
-            setattr(task_for_update, var, value) if value else None
+            if value is not None:
+                setattr(task_for_update, var, value)
     session.add(task_for_update)
     session.commit()
     session.refresh(task_for_update)
